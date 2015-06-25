@@ -1,0 +1,77 @@
+﻿body {
+	background-color: lightgrey;
+}
+.keg_info {
+    width: 400px;
+    font-family: LeagueGothic,"Helvetica Neue",Helvetica,Helvetica,Arial,sans-serif;
+}
+
+.alcohol_level {
+    color: red;
+    font-size: 2em;
+}
+
+.beer_name {
+    font-family: LeagueGothic,"Helvetica Neue",Helvetica,Helvetica,Arial,sans-serif;
+    font-size: 2em;
+    text-transform: uppercase;
+    color: #1e1e20;
+}
+
+.beer_description {
+    background-color: #1e1e20;
+    color: #edebe6;
+}
+
+.beer_content {
+    background-color: #1e1e20;
+    color: #edebe6;
+}
+
+.crop {
+    width: 400px;
+    overflow: hidden;
+}
+
+.crop img {
+    margin: 0px 0 0 0px;
+}
+
+progress {
+
+}
+
+progress::-webkit-progress-bar {
+	width: 400px;
+	height: 20px;
+	border: 0;
+	background-color: #ffff00;
+}
+progress::-webkit-progress-value {
+    width: 400px;
+	height: 20px;
+	border: 0;
+	background-color: #ffcc00;
+	background-image: linear-gradient(to left, #ffcc00, #f36d0a);
+}
+progress::-moz-progress-bar {
+    /* style rules */
+}
+
+.keg_status progress {
+	width: 400px;
+	height: 20px;
+	border: 0;
+	border-radius: 9px;
+	background-color: #ffcc00;
+	color: #ffcc00;
+}
+
+.alcohol_gauge {
+	color: #FFF;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	text-align: center;
+	vertical-align: middle;
+}
