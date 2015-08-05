@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MakeHResult
@@ -10,7 +13,48 @@ namespace MakeHResult
     {
         static void Main(string[] args)
         {
-            int result = MakeHResult(0, 32772, 12204);
+            int result = MakeHResult("SEVERITY_ERROR", "FACILITY_ITF", "12204");
+
+            if (args.Length != 2)
+            {
+                return;
+            }
+
+            string inputFile = args[0];
+            string outputFile = args[1];
+
+            if (!File.Exists(inputFile))
+            {
+                System.Diagnostics.Debug.Assert(false, inputFile + " doesn't exist.");
+                return;
+            }
+
+            using (TextReader tr = new StreamReader(inputFile))
+            {
+                TextWriter tw = new StreamWriter(outputFile, true /*append*/);
+                do
+                {
+                    string line = tr.ReadLine();
+                    Regex regEx = new Regex("#define (?<ErrorName>\\w+) MAKE_HRESULT\\((?<Severity>SEVERITY_\\w+), (?<Facility>FACILITY_\\w+), (?<ErrorCode>\\d+)\\)");
+                    Match match = regEx.Match(line);
+                    if (match.Success)
+                    {
+                        tw.WriteLine(match.Groups["ErrorName"].Value + ", " + MakeHResult(match.Groups["Severity"].Value, match.Groups["Facility"].Value, match.Groups["ErrorCode"].Value));
+                    }
+                }
+                while (tr.Peek() != -1);
+
+                tr.Close();
+
+                tw.Flush();
+                tw.Close();
+            }
+
+        }
+
+        static int MakeHResult(string severity, string facility, string code)
+        {
+            return MakeHResult(GetSeverity(severity), GetFacility(facility), GetCode(code));
         }
 
         //  HRESULTs are 32 bit values layed out as follows
@@ -46,6 +90,44 @@ namespace MakeHResult
         static int MakeHResult(ulong severity, ulong facility, ulong code)
         {
             return (int) (severity << 31 | facility << 16 | code);
+        }
+
+        static ulong GetSeverity(string severity)
+        {
+            switch(severity.ToUpper())
+            {
+                case "SEVERITY_ERROR":
+                    return 1;
+                case "SEVERITY_SUCCESS":
+                default:
+                    return 0;
+            }
+        }
+
+        static ulong GetFacility(string facility)
+        {
+            switch(facility.ToUpper())
+            {
+                case "FACILITY_ITF":
+                    return 0x4;
+
+                case "FACILITY_NULL":
+                default:
+                    return 0x0;
+            }
+        }
+
+        static ulong GetCode(string code)
+        {
+            try
+            {
+                return ulong.Parse(code);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message + " Invalid code: " + code);
+            }
+            return 0;
         }
     }
 }
